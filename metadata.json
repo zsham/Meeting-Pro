@@ -1,5 +1,5 @@
 {
   "name": "Meeting Pro",
   "description": "A comprehensive meeting management system for admins to schedule sessions, invite users, and manage meeting notes.",
-  "requestFramePermissions": []
+  "requestFramePermissions": ["camera", "microphone"]
 }

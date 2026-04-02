@@ -18,7 +18,13 @@ import {
   ChevronRight,
   LogOut,
   Shield,
-  User as UserIcon
+  User as UserIcon,
+  Video,
+  VideoOff,
+  Mic,
+  MicOff,
+  PhoneOff,
+  Camera
 } from 'lucide-react';
 import { format, isAfter, parseISO } from 'date-fns';
 import { motion, AnimatePresence } from 'motion/react';
@@ -33,6 +39,7 @@ export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMeeting, setEditingMeeting] = useState<Meeting | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeCallMeetingId, setActiveCallMeetingId] = useState<string | null>(null);
 
   // Load data from localStorage
   useEffect(() => {
@@ -227,6 +234,7 @@ export default function App() {
                   onCancel={() => handleCancelMeeting(meeting.id)}
                   onDelete={() => handleDeleteMeeting(meeting.id)}
                   onUpdateNotes={(notes) => handleUpdateNotes(meeting.id, notes)}
+                  onJoinCall={() => setActiveCallMeetingId(meeting.id)}
                 />
               ))}
             </div>
@@ -244,6 +252,16 @@ export default function App() {
           />
         )}
       </AnimatePresence>
+
+      {/* Video Call Overlay */}
+      <AnimatePresence>
+        {activeCallMeetingId && (
+          <VideoCallOverlay 
+            meeting={meetings.find(m => m.id === activeCallMeetingId) || null}
+            onClose={() => setActiveCallMeetingId(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -255,6 +273,7 @@ interface MeetingCardProps {
   onCancel: () => void;
   onDelete: () => void;
   onUpdateNotes: (notes: string) => void;
+  onJoinCall: () => void;
 }
 
 const MeetingCard: React.FC<MeetingCardProps> = ({ 
@@ -263,7 +282,8 @@ const MeetingCard: React.FC<MeetingCardProps> = ({
   onEdit, 
   onCancel, 
   onDelete,
-  onUpdateNotes 
+  onUpdateNotes,
+  onJoinCall
 }) => {
   const [isNotesOpen, setIsNotesOpen] = useState(false);
   const [notes, setNotes] = useState(meeting.notes);
@@ -327,7 +347,16 @@ const MeetingCard: React.FC<MeetingCardProps> = ({
             </div>
           </div>
 
-          <div className="flex flex-wrap lg:flex-col gap-2 lg:min-w-[140px]">
+            <div className="flex flex-wrap lg:flex-col gap-2 lg:min-w-[140px]">
+              {!isCancelled && !isPast && (
+                <button 
+                  onClick={onJoinCall}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-all shadow-sm"
+                >
+                  <Video className="w-4 h-4" />
+                  Join Call
+                </button>
+              )}
             {role === 'admin' && !isCancelled && (
               <>
                 <button 
@@ -417,6 +446,180 @@ const MeetingCard: React.FC<MeetingCardProps> = ({
     </motion.div>
   );
 }
+
+interface VideoCallOverlayProps {
+  meeting: Meeting | null;
+  onClose: () => void;
+}
+
+const VideoCallOverlay: React.FC<VideoCallOverlayProps> = ({ meeting, onClose }) => {
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [isMicOn, setIsMicOn] = useState(true);
+  const [isVideoOn, setIsVideoOn] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function startMedia() {
+      try {
+        const mediaStream = await navigator.mediaDevices.getUserMedia({ 
+          video: true, 
+          audio: true 
+        });
+        setStream(mediaStream);
+        if (videoRef.current) {
+          videoRef.current.srcObject = mediaStream;
+        }
+      } catch (err) {
+        console.error("Error accessing media devices:", err);
+        setError("Could not access camera or microphone. Please check permissions.");
+      }
+    }
+
+    startMedia();
+
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
+
+  const toggleMic = () => {
+    if (stream) {
+      const audioTrack = stream.getAudioTracks()[0];
+      if (audioTrack) {
+        audioTrack.enabled = !audioTrack.enabled;
+        setIsMicOn(audioTrack.enabled);
+      }
+    }
+  };
+
+  const toggleVideo = () => {
+    if (stream) {
+      const videoTrack = stream.getVideoTracks()[0];
+      if (videoTrack) {
+        videoTrack.enabled = !videoTrack.enabled;
+        setIsVideoOn(videoTrack.enabled);
+      }
+    }
+  };
+
+  if (!meeting) return null;
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[60] bg-slate-950 flex flex-col"
+    >
+      {/* Header */}
+      <div className="p-4 flex items-center justify-between bg-slate-900/50 backdrop-blur-md border-b border-slate-800">
+        <div className="flex items-center gap-3">
+          <div className="bg-indigo-600 p-2 rounded-lg">
+            <Video className="text-white w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-white font-bold">{meeting.title}</h2>
+            <p className="text-slate-400 text-xs">Live Meeting • {MOCK_USERS.length} participants</p>
+          </div>
+        </div>
+        <button 
+          onClick={onClose}
+          className="p-2 hover:bg-slate-800 rounded-full transition-all"
+        >
+          <X className="w-6 h-6 text-slate-400" />
+        </button>
+      </div>
+
+      {/* Video Grid */}
+      <div className="flex-1 p-4 grid grid-cols-1 md:grid-cols-2 gap-4 overflow-hidden">
+        {/* Self View */}
+        <div className="relative bg-slate-900 rounded-3xl overflow-hidden border border-slate-800 shadow-2xl group">
+          {isVideoOn ? (
+            <video 
+              ref={videoRef} 
+              autoPlay 
+              playsInline 
+              muted 
+              className="w-full h-full object-cover mirror"
+            />
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center bg-slate-800">
+              <div className="w-24 h-24 rounded-full bg-slate-700 flex items-center justify-center mb-4">
+                <UserIcon className="w-12 h-12 text-slate-500" />
+              </div>
+              <p className="text-slate-400 font-medium">Camera is off</p>
+            </div>
+          )}
+          <div className="absolute bottom-4 left-4 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-700 flex items-center gap-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            <span className="text-white text-xs font-bold">You (Admin)</span>
+          </div>
+          
+          {error && (
+            <div className="absolute inset-0 flex items-center justify-center bg-slate-950/80 p-6 text-center">
+              <div className="max-w-xs">
+                <Camera className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                <p className="text-white font-bold mb-2">Permission Denied</p>
+                <p className="text-slate-400 text-sm">{error}</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Mock Participant View */}
+        <div className="relative bg-slate-900 rounded-3xl overflow-hidden border border-slate-800 shadow-2xl hidden md:block">
+          <img 
+            src="https://picsum.photos/seed/meeting/800/600" 
+            alt="Participant" 
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover opacity-50"
+          />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-24 h-24 rounded-full bg-indigo-600/20 border-2 border-indigo-500/30 flex items-center justify-center">
+              <Users className="w-10 h-10 text-indigo-400" />
+            </div>
+          </div>
+          <div className="absolute bottom-4 left-4 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-700 flex items-center gap-2">
+            <span className="text-white text-xs font-bold">John Doe</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="p-8 bg-slate-950 border-t border-slate-800 flex items-center justify-center gap-6">
+        <button 
+          onClick={toggleMic}
+          className={cn(
+            "p-4 rounded-full transition-all shadow-lg active:scale-90",
+            isMicOn ? "bg-slate-800 text-white hover:bg-slate-700" : "bg-red-600 text-white hover:bg-red-700"
+          )}
+        >
+          {isMicOn ? <Mic className="w-6 h-6" /> : <MicOff className="w-6 h-6" />}
+        </button>
+        
+        <button 
+          onClick={toggleVideo}
+          className={cn(
+            "p-4 rounded-full transition-all shadow-lg active:scale-90",
+            isVideoOn ? "bg-slate-800 text-white hover:bg-slate-700" : "bg-red-600 text-white hover:bg-red-700"
+          )}
+        >
+          {isVideoOn ? <Video className="w-6 h-6" /> : <VideoOff className="w-6 h-6" />}
+        </button>
+
+        <button 
+          onClick={onClose}
+          className="p-4 bg-red-600 hover:bg-red-700 text-white rounded-full transition-all shadow-lg shadow-red-900/20 active:scale-90"
+        >
+          <PhoneOff className="w-6 h-6" />
+        </button>
+      </div>
+    </motion.div>
+  );
+};
 
 interface MeetingModalProps {
   meeting: Meeting | null;
