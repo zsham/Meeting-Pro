@@ -113,24 +113,24 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       {/* Navigation */}
-      <nav className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-slate-200">
+      <nav className="sticky top-0 z-40 w-full glass border-b border-slate-200/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-            <div className="flex items-center gap-2">
-              <div className="bg-indigo-600 p-2 rounded-lg">
-                <Calendar className="text-white w-6 h-6" />
+            <div className="flex items-center gap-3">
+              <div className="bg-slate-900 p-2 rounded-lg shadow-sm">
+                <Calendar className="text-white w-5 h-5" />
               </div>
-              <span className="text-xl font-bold tracking-tight text-slate-900">Meeting Pro</span>
+              <span className="text-lg font-bold tracking-tight text-slate-900">Meeting<span className="text-indigo-600">Pro</span></span>
             </div>
             
-            <div className="flex items-center gap-4">
-              <div className="hidden md:flex items-center bg-slate-100 rounded-full p-1">
+            <div className="flex items-center gap-6">
+              <div className="hidden md:flex items-center bg-slate-100/80 rounded-full p-1 border border-slate-200/50">
                 {MOCK_USERS.map(user => (
                   <button
                     key={user.id}
                     onClick={() => setCurrentUser(user)}
                     className={cn(
-                      "px-3 py-1 rounded-full text-xs font-medium transition-all",
+                      "px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider transition-all",
                       currentUser.id === user.id 
                         ? "bg-white text-indigo-600 shadow-sm" 
                         : "text-slate-500 hover:text-slate-700"
@@ -141,13 +141,13 @@ export default function App() {
                 ))}
               </div>
               
-              <div className="flex items-center gap-2 pl-4 border-l border-slate-200">
+              <div className="flex items-center gap-3 pl-6 border-l border-slate-200">
                 <div className="text-right hidden sm:block">
-                  <p className="text-sm font-semibold">{currentUser.name}</p>
-                  <p className="text-xs text-slate-500 capitalize">{currentUser.role}</p>
+                  <p className="text-xs font-bold text-slate-900">{currentUser.name}</p>
+                  <p className="text-[10px] text-slate-500 font-mono uppercase tracking-tighter">{currentUser.role}</p>
                 </div>
-                <div className="bg-slate-200 p-2 rounded-full">
-                  {currentUser.role === 'admin' ? <Shield className="w-5 h-5 text-indigo-600" /> : <UserIcon className="w-5 h-5 text-slate-600" />}
+                <div className="bg-indigo-50 p-2 rounded-xl border border-indigo-100">
+                  {currentUser.role === 'admin' ? <Shield className="w-4 h-4 text-indigo-600" /> : <UserIcon className="w-4 h-4 text-indigo-600" />}
                 </div>
               </div>
             </div>
@@ -155,17 +155,21 @@ export default function App() {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">
-              {currentUser.role === 'admin' ? 'Meeting Management' : 'My Meetings'}
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-2 h-2 bg-indigo-600 rounded-full" />
+              <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-[0.2em]">Workspace</span>
+            </div>
+            <h1 className="text-4xl font-black text-slate-900 tracking-tight">
+              {currentUser.role === 'admin' ? 'Control Center' : 'My Schedule'}
             </h1>
-            <p className="text-slate-500 mt-1">
+            <p className="text-slate-500 mt-2 max-w-md text-sm leading-relaxed">
               {currentUser.role === 'admin' 
-                ? 'Schedule, manage and track all organization meetings.' 
-                : 'View and manage meetings you have been invited to.'}
+                ? 'Orchestrate organization meetings, manage participants, and archive critical session notes.' 
+                : 'Access your upcoming sessions and review shared meeting intelligence.'}
             </p>
           </div>
           
@@ -175,35 +179,35 @@ export default function App() {
                 setEditingMeeting(null);
                 setIsModalOpen(true);
               }}
-              className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-semibold transition-all shadow-lg shadow-indigo-200 active:scale-95"
+              className="flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-xl shadow-slate-200 active:scale-95 text-sm"
             >
-              <Plus className="w-5 h-5" />
-              New Meeting
+              <Plus className="w-4 h-4" />
+              Schedule Session
             </button>
           )}
         </div>
 
         {/* Search & Stats */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-12">
           <div className="lg:col-span-3">
-            <div className="relative">
+            <div className="relative group">
               <input
                 type="text"
-                placeholder="Search meetings by title or description..."
+                placeholder="Filter by title, description, or keywords..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white border border-slate-200 rounded-2xl px-12 py-4 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all shadow-sm"
+                className="w-full bg-white border border-slate-200 rounded-2xl px-14 py-5 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all shadow-sm text-sm placeholder:text-slate-400"
               />
-              <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+              <Calendar className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors w-5 h-5" />
             </div>
           </div>
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+          <div className="dashboard-card p-5 flex items-center justify-between">
             <div>
-              <p className="text-slate-500 text-sm font-medium">Total Meetings</p>
-              <p className="text-2xl font-bold text-indigo-600">{filteredMeetings.length}</p>
+              <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Active Sessions</p>
+              <p className="text-3xl font-black text-slate-900">{filteredMeetings.length}</p>
             </div>
-            <div className="bg-indigo-50 p-3 rounded-xl">
-              <Clock className="text-indigo-600 w-6 h-6" />
+            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100">
+              <Clock className="text-slate-400 w-5 h-5" />
             </div>
           </div>
         </div>
@@ -298,79 +302,78 @@ const MeetingCard: React.FC<MeetingCardProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        "bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all",
-        isCancelled && "opacity-75 grayscale-[0.5]"
+        "dashboard-card overflow-hidden group",
+        isCancelled && "opacity-75 grayscale-[0.5] bg-slate-50/50"
       )}
     >
-      <div className="p-6">
-        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
-          <div className="flex-1 space-y-4">
-            <div className="flex items-center gap-3">
+      <div className="p-8">
+        <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-8">
+          <div className="flex-1 space-y-6">
+            <div className="flex items-center gap-4">
               <span className={cn(
-                "px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider",
-                isCancelled ? "bg-red-100 text-red-600" : 
-                isPast ? "bg-slate-100 text-slate-600" : "bg-green-100 text-green-600"
+                "px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-[0.15em] border",
+                isCancelled ? "bg-red-50 text-red-600 border-red-100" : 
+                isPast ? "bg-slate-50 text-slate-500 border-slate-200" : "bg-indigo-50 text-indigo-600 border-indigo-100"
               )}>
-                {isCancelled ? 'Cancelled' : isPast ? 'Completed' : 'Upcoming'}
+                {isCancelled ? 'Cancelled' : isPast ? 'Archived' : 'Active'}
               </span>
-              <span className="text-slate-400 text-sm">•</span>
-              <div className="flex items-center gap-1.5 text-slate-500 text-sm font-medium">
-                <Clock className="w-4 h-4" />
-                {format(parseISO(meeting.startTime), 'MMM d, yyyy • h:mm a')}
+              <div className="flex items-center gap-2 text-slate-400 text-[11px] font-mono uppercase tracking-tight">
+                <Clock className="w-3.5 h-3.5" />
+                {format(parseISO(meeting.startTime), 'MMM d, yyyy • HH:mm')}
               </div>
             </div>
 
             <div>
-              <h3 className={cn("text-xl font-bold text-slate-900", isCancelled && "line-through")}>
+              <h3 className={cn("text-2xl font-black text-slate-900 tracking-tight leading-none mb-3", isCancelled && "line-through opacity-50")}>
                 {meeting.title}
               </h3>
-              <p className="text-slate-600 mt-1 line-clamp-2">{meeting.description}</p>
+              <p className="text-slate-500 text-sm leading-relaxed max-w-2xl">{meeting.description}</p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <div className="flex -space-x-2">
-                {invitedUsers.map((user) => (
-                  <div 
-                    key={user.id}
-                    title={user.name}
-                    className="w-8 h-8 rounded-full bg-indigo-100 border-2 border-white flex items-center justify-center text-[10px] font-bold text-indigo-600"
-                  >
-                    {user.name.split(' ').map(n => n[0]).join('')}
-                  </div>
-                ))}
-                {invitedUsers.length === 0 && <span className="text-xs text-slate-400 italic">No invitees</span>}
-              </div>
-              <div className="flex items-center gap-1.5 text-slate-500 text-xs font-medium">
-                <Users className="w-4 h-4" />
-                {invitedUsers.length} Invited
+            <div className="flex flex-wrap items-center gap-6 pt-2">
+              <div className="flex items-center gap-3">
+                <div className="flex -space-x-2.5">
+                  {invitedUsers.map((user) => (
+                    <div 
+                      key={user.id}
+                      title={user.name}
+                      className="w-9 h-9 rounded-xl bg-white border-2 border-slate-50 flex items-center justify-center text-[11px] font-black text-slate-700 shadow-sm"
+                    >
+                      {user.name.split(' ').map(n => n[0]).join('')}
+                    </div>
+                  ))}
+                </div>
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                  {invitedUsers.length} Participants
+                </div>
               </div>
             </div>
           </div>
 
-            <div className="flex flex-wrap lg:flex-col gap-2 lg:min-w-[140px]">
+          <div className="flex flex-wrap lg:flex-col gap-3 lg:min-w-[160px]">
               {!isCancelled && !isPast && (
                 <button 
                   onClick={onJoinCall}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-all shadow-sm"
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-indigo-200 active:scale-95"
                 >
                   <Video className="w-4 h-4" />
-                  Join Call
+                  Join
                 </button>
               )}
             {role === 'admin' && !isCancelled && (
               <>
                 <button 
                   onClick={onEdit}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold transition-all"
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 rounded-2xl text-xs font-bold transition-all active:scale-95"
                 >
-                  <Edit3 className="w-4 h-4" />
+                  <Edit3 className="w-3.5 h-3.5" />
                   Edit
                 </button>
                 <button 
                   onClick={onCancel}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-600 rounded-xl text-sm font-semibold transition-all"
+                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-amber-50 text-amber-600 border border-amber-100 rounded-2xl text-xs font-bold transition-all active:scale-95"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-3.5 h-3.5" />
                   Cancel
                 </button>
               </>
@@ -378,25 +381,24 @@ const MeetingCard: React.FC<MeetingCardProps> = ({
             {role === 'admin' && (
               <button 
                 onClick={onDelete}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-sm font-semibold transition-all"
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-white hover:bg-red-50 text-red-600 border border-red-100 rounded-2xl text-xs font-bold transition-all active:scale-95"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-3.5 h-3.5" />
                 Delete
               </button>
             )}
             <button 
               onClick={() => setIsNotesOpen(!isNotesOpen)}
               className={cn(
-                "flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all",
-                isNotesOpen ? "bg-indigo-600 text-white" : "bg-indigo-50 text-indigo-600 hover:bg-indigo-100"
+                "flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-2xl text-xs font-bold transition-all active:scale-95",
+                isNotesOpen ? "bg-slate-900 text-white" : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
               )}
             >
-              <FileText className="w-4 h-4" />
+              <FileText className="w-3.5 h-3.5" />
               Notes
             </button>
           </div>
         </div>
-
         <AnimatePresence>
           {isNotesOpen && (
             <motion.div
@@ -512,31 +514,34 @@ const VideoCallOverlay: React.FC<VideoCallOverlayProps> = ({ meeting, onClose })
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[60] bg-slate-950 flex flex-col"
+      className="fixed inset-0 z-[60] bg-slate-950 flex flex-col font-sans"
     >
       {/* Header */}
-      <div className="p-4 flex items-center justify-between bg-slate-900/50 backdrop-blur-md border-b border-slate-800">
-        <div className="flex items-center gap-3">
-          <div className="bg-indigo-600 p-2 rounded-lg">
-            <Video className="text-white w-5 h-5" />
+      <div className="p-6 flex items-center justify-between bg-slate-900/40 backdrop-blur-xl border-b border-white/5">
+        <div className="flex items-center gap-4">
+          <div className="bg-indigo-500/20 p-2.5 rounded-xl border border-indigo-500/30">
+            <Video className="text-indigo-400 w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-white font-bold">{meeting.title}</h2>
-            <p className="text-slate-400 text-xs">Live Meeting • {MOCK_USERS.length} participants</p>
+            <div className="flex items-center gap-2 mb-0.5">
+              <h2 className="text-white font-black tracking-tight">{meeting.title}</h2>
+              <span className="px-2 py-0.5 rounded-md bg-red-500/10 border border-red-500/20 text-red-500 text-[9px] font-black uppercase tracking-widest">Live</span>
+            </div>
+            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Encrypted Session • {MOCK_USERS.length} Participants</p>
           </div>
         </div>
         <button 
           onClick={onClose}
-          className="p-2 hover:bg-slate-800 rounded-full transition-all"
+          className="p-2 hover:bg-white/5 rounded-xl transition-all border border-transparent hover:border-white/10"
         >
           <X className="w-6 h-6 text-slate-400" />
         </button>
       </div>
 
       {/* Video Grid */}
-      <div className="flex-1 p-4 grid grid-cols-1 md:grid-cols-2 gap-4 overflow-hidden">
+      <div className="flex-1 p-6 grid grid-cols-1 md:grid-cols-2 gap-6 overflow-hidden">
         {/* Self View */}
-        <div className="relative bg-slate-900 rounded-3xl overflow-hidden border border-slate-800 shadow-2xl group">
+        <div className="relative bg-slate-900 rounded-[2rem] overflow-hidden border border-white/5 shadow-2xl group">
           {isVideoOn ? (
             <video 
               ref={videoRef} 
@@ -546,55 +551,60 @@ const VideoCallOverlay: React.FC<VideoCallOverlayProps> = ({ meeting, onClose })
               className="w-full h-full object-cover mirror"
             />
           ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center bg-slate-800">
-              <div className="w-24 h-24 rounded-full bg-slate-700 flex items-center justify-center mb-4">
-                <UserIcon className="w-12 h-12 text-slate-500" />
+            <div className="w-full h-full flex flex-col items-center justify-center bg-slate-900">
+              <div className="w-24 h-24 rounded-3xl bg-slate-800 border border-white/5 flex items-center justify-center mb-4 shadow-inner">
+                <UserIcon className="w-10 h-10 text-slate-600" />
               </div>
-              <p className="text-slate-400 font-medium">Camera is off</p>
+              <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">Camera Disabled</p>
             </div>
           )}
-          <div className="absolute bottom-4 left-4 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-700 flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <span className="text-white text-xs font-bold">You (Admin)</span>
+          <div className="absolute bottom-6 left-6 glass px-4 py-2 rounded-xl border border-white/10 flex items-center gap-3">
+            <div className="relative">
+              <div className="w-2 h-2 bg-green-500 rounded-full" />
+              <div className="absolute inset-0 w-2 h-2 bg-green-500 rounded-full animate-ping opacity-75" />
+            </div>
+            <span className="text-white text-[11px] font-black uppercase tracking-wider">You (Admin)</span>
           </div>
           
           {error && (
-            <div className="absolute inset-0 flex items-center justify-center bg-slate-950/80 p-6 text-center">
+            <div className="absolute inset-0 flex items-center justify-center bg-slate-950/90 p-8 text-center backdrop-blur-sm">
               <div className="max-w-xs">
-                <Camera className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                <p className="text-white font-bold mb-2">Permission Denied</p>
-                <p className="text-slate-400 text-sm">{error}</p>
+                <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <Camera className="w-8 h-8 text-red-500" />
+                </div>
+                <p className="text-white font-black text-lg mb-2 tracking-tight">Access Restricted</p>
+                <p className="text-slate-400 text-sm leading-relaxed">{error}</p>
               </div>
             </div>
           )}
         </div>
 
         {/* Mock Participant View */}
-        <div className="relative bg-slate-900 rounded-3xl overflow-hidden border border-slate-800 shadow-2xl hidden md:block">
+        <div className="relative bg-slate-900 rounded-[2rem] overflow-hidden border border-white/5 shadow-2xl hidden md:block">
           <img 
-            src="https://picsum.photos/seed/meeting/800/600" 
+            src="https://picsum.photos/seed/professional/1200/800" 
             alt="Participant" 
             referrerPolicy="no-referrer"
-            className="w-full h-full object-cover opacity-50"
+            className="w-full h-full object-cover opacity-40"
           />
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-24 h-24 rounded-full bg-indigo-600/20 border-2 border-indigo-500/30 flex items-center justify-center">
-              <Users className="w-10 h-10 text-indigo-400" />
+            <div className="w-24 h-24 rounded-3xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center backdrop-blur-sm">
+              <Users className="w-10 h-10 text-indigo-400/50" />
             </div>
           </div>
-          <div className="absolute bottom-4 left-4 bg-slate-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-700 flex items-center gap-2">
-            <span className="text-white text-xs font-bold">John Doe</span>
+          <div className="absolute bottom-6 left-6 glass px-4 py-2 rounded-xl border border-white/10 flex items-center gap-3">
+            <span className="text-white text-[11px] font-black uppercase tracking-wider">John Doe</span>
           </div>
         </div>
       </div>
 
       {/* Controls */}
-      <div className="p-8 bg-slate-950 border-t border-slate-800 flex items-center justify-center gap-6">
+      <div className="p-10 bg-slate-950 border-t border-white/5 flex items-center justify-center gap-8">
         <button 
           onClick={toggleMic}
           className={cn(
-            "p-4 rounded-full transition-all shadow-lg active:scale-90",
-            isMicOn ? "bg-slate-800 text-white hover:bg-slate-700" : "bg-red-600 text-white hover:bg-red-700"
+            "p-5 rounded-2xl transition-all shadow-2xl active:scale-90 border",
+            isMicOn ? "bg-slate-900 text-white border-white/10 hover:bg-slate-800" : "bg-red-500 text-white border-red-400/20 hover:bg-red-600"
           )}
         >
           {isMicOn ? <Mic className="w-6 h-6" /> : <MicOff className="w-6 h-6" />}
@@ -603,18 +613,20 @@ const VideoCallOverlay: React.FC<VideoCallOverlayProps> = ({ meeting, onClose })
         <button 
           onClick={toggleVideo}
           className={cn(
-            "p-4 rounded-full transition-all shadow-lg active:scale-90",
-            isVideoOn ? "bg-slate-800 text-white hover:bg-slate-700" : "bg-red-600 text-white hover:bg-red-700"
+            "p-5 rounded-2xl transition-all shadow-2xl active:scale-90 border",
+            isVideoOn ? "bg-slate-900 text-white border-white/10 hover:bg-slate-800" : "bg-red-500 text-white border-red-400/20 hover:bg-red-600"
           )}
         >
           {isVideoOn ? <Video className="w-6 h-6" /> : <VideoOff className="w-6 h-6" />}
         </button>
 
+        <div className="w-px h-10 bg-white/10 mx-2" />
+
         <button 
           onClick={onClose}
-          className="p-4 bg-red-600 hover:bg-red-700 text-white rounded-full transition-all shadow-lg shadow-red-900/20 active:scale-90"
+          className="px-10 py-5 bg-red-500 hover:bg-red-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs transition-all shadow-2xl shadow-red-500/20 active:scale-95"
         >
-          <PhoneOff className="w-6 h-6" />
+          End Session
         </button>
       </div>
     </motion.div>
@@ -659,102 +671,105 @@ const MeetingModal: React.FC<MeetingModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 font-sans">
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+        className="absolute inset-0 bg-slate-900/40 backdrop-blur-md"
       />
       <motion.div 
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden"
+        className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100"
       >
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-slate-900">
-            {meeting ? 'Edit Meeting' : 'Schedule New Meeting'}
-          </h2>
-          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-all">
-            <X className="w-5 h-5 text-slate-500" />
+        <div className="p-10 border-b border-slate-50 flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+              {meeting ? 'Refine Session' : 'New Session'}
+            </h2>
+            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">Configure meeting parameters</p>
+          </div>
+          <button onClick={onClose} className="p-3 hover:bg-slate-50 rounded-2xl transition-all border border-transparent hover:border-slate-100">
+            <X className="w-5 h-5 text-slate-400" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1.5">Meeting Title</label>
+        <form onSubmit={handleSubmit} className="p-10 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Session Title</label>
               <input
                 required
                 type="text"
                 value={formData.title}
                 onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="e.g. Weekly Sync, Project Kickoff"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                placeholder="Strategic Planning Q3..."
+                className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-sm"
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-1.5">Description</label>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Agenda & Context</label>
               <textarea
                 value={formData.description}
                 onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="What is this meeting about?"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 transition-all min-h-[100px]"
+                placeholder="Define key objectives and expected outcomes..."
+                className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all min-h-[120px] font-medium text-sm leading-relaxed"
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5">Start Time</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Commencement</label>
                 <input
                   required
                   type="datetime-local"
                   value={formData.startTime}
                   onChange={e => setFormData(prev => ({ ...prev, startTime: e.target.value }))}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-sm"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5">End Time</label>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Conclusion</label>
                 <input
                   required
                   type="datetime-local"
                   value={formData.endTime}
                   onChange={e => setFormData(prev => ({ ...prev, endTime: e.target.value }))}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium text-sm"
                 />
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-bold text-slate-700 mb-3">Invite Participants</label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div className="space-y-4">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Invite Intelligence</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {MOCK_USERS.filter(u => u.role !== 'admin').map(user => (
                   <button
                     key={user.id}
                     type="button"
                     onClick={() => toggleUser(user.id)}
                     className={cn(
-                      "flex items-center gap-3 p-3 rounded-xl border transition-all text-left",
+                      "flex items-center gap-4 p-4 rounded-2xl border transition-all text-left group",
                       formData.invitedUserIds.includes(user.id)
-                        ? "bg-indigo-50 border-indigo-200 text-indigo-700"
-                        : "bg-white border-slate-200 text-slate-600 hover:border-slate-300"
+                        ? "bg-indigo-50/50 border-indigo-200"
+                        : "bg-white border-slate-100 hover:border-slate-200"
                     )}
                   >
                     <div className={cn(
-                      "w-5 h-5 rounded-md border flex items-center justify-center transition-all",
+                      "w-6 h-6 rounded-lg border flex items-center justify-center transition-all",
                       formData.invitedUserIds.includes(user.id)
-                        ? "bg-indigo-600 border-indigo-600"
-                        : "bg-white border-slate-300"
+                        ? "bg-indigo-600 border-indigo-600 shadow-lg shadow-indigo-200"
+                        : "bg-slate-50 border-slate-200 group-hover:border-slate-300"
                     )}>
-                      {formData.invitedUserIds.includes(user.id) && <CheckCircle2 className="w-3.5 h-3.5 text-white" />}
+                      {formData.invitedUserIds.includes(user.id) && <CheckCircle2 className="w-4 h-4 text-white" />}
                     </div>
                     <div>
-                      <p className="text-sm font-bold leading-none">{user.name}</p>
-                      <p className="text-[10px] opacity-70 mt-1">{user.email}</p>
+                      <p className={cn("text-xs font-black tracking-tight", formData.invitedUserIds.includes(user.id) ? "text-indigo-900" : "text-slate-700")}>{user.name}</p>
+                      <p className="text-[10px] text-slate-400 font-medium mt-0.5">{user.email}</p>
                     </div>
                   </button>
                 ))}
@@ -762,23 +777,23 @@ const MeetingModal: React.FC<MeetingModalProps> = ({
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-4 pt-6">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition-all"
+              className="flex-1 px-8 py-4 bg-slate-50 hover:bg-slate-100 text-slate-500 rounded-2xl font-bold text-xs uppercase tracking-widest transition-all active:scale-95"
             >
-              Cancel
+              Discard
             </button>
             <button
               type="submit"
-              className="flex-[2] px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-indigo-100"
+              className="flex-[2] px-8 py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-xl shadow-slate-200 active:scale-95"
             >
-              {meeting ? 'Update Meeting' : 'Create Meeting'}
+              {meeting ? 'Confirm Changes' : 'Initialize Session'}
             </button>
           </div>
         </form>
       </motion.div>
     </div>
   );
-}
+};
